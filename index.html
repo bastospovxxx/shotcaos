@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHOT CAOS</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<div id="gamewrap"><canvas id="cv"></canvas></div>
+<div id="hud" class="hide">
+ <div id="bars">HP <b id="hHp"></b> | 🛡 <b id="hSh"></b> | LV <b id="hLv"></b> | XP <b id="hXp"></b> | ☠ <b id="hK"></b></div>
+ <div id="hPow"></div><div id="hEv"></div><div id="hPl"></div><div id="cross">+</div>
+ <button id="bPause">☰</button>
+</div>
+<div id="banner" class="hide"></div><div id="toast" class="hide"></div>
+
+<section id="auth" class="scr hide"><h1>SHOT CAOS</h1>
+ <input id="aEmail" type="email" placeholder="E-mail"><input id="aPass" type="password" placeholder="Senha (mín. 6)">
+ <input id="aName" placeholder="Nome de usuário (para criar conta)">
+ <button id="bLogin">ENTRAR</button><button id="bReg">CRIAR CONTA</button>
+ <button id="bForgot">ESQUECI A SENHA</button><button id="bOff0">MODO OFFLINE</button></section>
+
+<section id="menu" class="scr hide"><h1>SHOT CAOS</h1>
+ <button id="bOn">JOGAR ONLINE</button><button id="bOff">JOGAR OFFLINE</button>
+ <button id="bSrv">SERVIDORES</button><button id="bProf">PERFIL</button>
+ <button id="bCfg">CONFIGURAÇÕES</button><button id="bCred">CRÉDITOS</button>
+ <button id="bOut">SAIR DA CONTA</button></section>
+
+<section id="servers" class="scr hide"><h2>SERVIDORES</h2>
+ <input id="sName" placeholder="Nome do novo servidor"><button id="bCreate">CRIAR SERVIDOR</button>
+ <button id="bRefresh">ATUALIZAR LISTA</button><div id="sList"></div><button class="back">VOLTAR</button></section>
+
+<section id="lobby" class="scr hide"><h2>SHOT CAOS — LOBBY</h2><div id="lTitle"></div>
+ <div id="lPlayers"></div><div id="lCount"></div>
+ <button id="bStart" class="hide">INICIAR PARTIDA</button><div id="lWait" class="hide">Aguardando o dono...</div>
+ <button id="bLeave">SAIR DO SERVIDOR</button></section>
+
+<section id="prof" class="scr hide"><h2>PERFIL</h2><pre id="pInfo"></pre><button class="back">VOLTAR</button></section>
+
+<section id="cfg" class="scr hide"><h2>CONFIGURAÇÕES</h2>
+ <label>Sensibilidade <input id="cSens" type="range" min="1" max="10" step=".5"></label>
+ <label>FOV <input id="cFov" type="range" min="60" max="110"></label>
+ <label>Volume <input id="cVol" type="range" min="0" max="1" step=".1"></label>
+ <label>Qualidade <select id="cQ"><option value="1">Alta</option><option value=".6">Média</option><option value=".4">Baixa</option></select></label>
+ <label><input id="cRed" type="checkbox"> Reduzir efeitos visuais</label>
+ <label><input id="cFx" type="checkbox"> Efeitos visuais ligados</label>
+ <label><input id="cFps" type="checkbox"> Mostrar FPS</label>
+ <button id="bSaveCfg">SALVAR</button></section>
+
+<section id="cred" class="scr hide"><h2>CRÉDITOS</h2><p>SHOT CAOS — Three.js + Firebase.</p><button class="back">VOLTAR</button></section>
+<section id="pause" class="scr hide"><h2>PAUSA</h2><button id="bResume">CONTINUAR</button><button id="bQuit">SAIR PARA O MENU</button></section>
+<section id="end" class="scr hide"><h2 id="endT"></h2><button id="bEnd">VOLTAR AO MENU</button></section>
+<section id="err" class="scr hide"><h2>Algo deu errado</h2><p id="errT"></p><button onclick="location.reload()">RECARREGAR</button></section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body></html>

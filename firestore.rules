@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function me(uid) { return signedIn() && request.auth.uid == uid; }
+
+    match /users/{uid} {
+      allow read: if me(uid);
+      allow create, update: if me(uid) && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','username','email','createdAt','lastLogin','globalStats']);
+      allow delete: if false;
+
+      match /serverProgress/{serverId} {
+        allow read: if me(uid);
+        allow create: if me(uid) && request.resource.data.level is int && request.resource.data.level <= 5
+          && request.resource.data.xp is number && request.resource.data.xp >= 0;
+        // Anti-cheat básico: nível não pode saltar mais que 5 por gravação, máximo 50
+        allow update: if me(uid) && request.resource.data.level is int
+          && request.resource.data.level <= 50
+          && request.resource.data.level <= resource.data.level + 5
+          && request.resource.data.level >= resource.data.level - 1
+          && request.resource.data.xp >= 0 && request.resource.data.powers.size() <= 70;
+        allow delete: if me(uid);
+      }
+    }
+
+    match /servers/{serverId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.maxPlayers == 5 && request.resource.data.status == 'waiting'
+        && request.resource.data.playerIds == [request.auth.uid];
+      allow update: if signedIn() && (
+        // dono: pode iniciar/configurar, mas não trocar ownerId nem maxPlayers
+        (resource.data.ownerId == request.auth.uid
+          && request.resource.data.ownerId == resource.data.ownerId
+          && request.resource.data.maxPlayers == 5
+          && request.resource.data.playerIds.size() <= 5)
+        ||
+        // qualquer jogador: só entrar/sair a si mesmo, sem passar de 5
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['playerIds','lastActivity'])
+          && request.resource.data.playerIds.size() <= 5
+          && request.resource.data.playerIds.toSet().difference(resource.data.playerIds.toSet()).hasOnly([request.auth.uid])
+          && resource.data.playerIds.toSet().difference(request.resource.data.playerIds.toSet()).hasOnly([request.auth.uid]))
+      );
+      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+
+      match /players/{uid} {
+        allow read: if signedIn();
+        allow create, update: if me(uid) && request.resource.data.uid == uid
+          && get(/databases/$(database)/documents/servers/$(serverId)).data.playerIds.hasAny([uid]);
+        allow delete: if me(uid);
+      }
+      match /state/{doc} {
+        allow read: if signedIn();
+        allow write: if signedIn() && get(/databases/$(database)/documents/servers/$(serverId)).data.ownerId == request.auth.uid;
+      }
+    }
+  }
+}
